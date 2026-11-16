@@ -1,0 +1,10 @@
+Nouvelle page d'accueil de plumedo2.app (préparée le 17/11/2026)
+
+Ce dossier remplace le contenu du dépôt du site. Rien n'est en ligne tant que tu ne l'as pas envoyé sur GitHub.
+
+Avant mise en ligne :
+1. mentions-legales.html : compléter l'adresse, vérifier l'adresse de Vercel.
+2. confidentialite.html : confirmer la durée de conservation des emails.
+3. Garder dans le dépôt le dossier /beta et le fichier beta-status.json s'ils y sont déjà.
+
+Pour voir le résultat sans toucher au vrai site : envoyer ces fichiers sur une nouvelle branche du dépôt GitHub. Vercel crée alors une adresse d'aperçu.
