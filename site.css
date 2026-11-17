@@ -156,7 +156,7 @@ footer span{margin:0 8px}
 .r:nth-child(2){margin-top:0}.r:nth-child(even){margin-top:40px}
 .r[disabled]{cursor:default}.r[disabled] i{color:var(--faint)}
 @media (max-width:760px){.doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 18px}.screens{margin-top:64px}.r:nth-child(even){margin-top:0}}
-@media (prefers-reduced-motion:reduce){.gate,.gate .door,.hero .ht>*,.hero-door{transition:none}.gate.open::after{animation:none}.wait i{animation:none}}
+@media (prefers-reduced-motion:reduce){.gate,.gate .door,.hero .ht>*,.hero-door,.hero-card{transition:none}.hc-glow,.entered .hero-card{animation:none!important}.gate.open::after{animation:none}.wait i{animation:none}}
 
 .player{text-align:center;margin-top:52px}
 .big{font:inherit;background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
@@ -200,14 +200,14 @@ body{margin:0}
 .line:hover{color:#D6F3FB;border-color:var(--ring);background:rgba(116,236,255,.09)}
 .line[aria-pressed="true"]{color:#EAFBFF;border-color:var(--ring);background:rgba(116,236,255,.15)}
 /* ---- porte dans l'accroche : ordinateur seulement ---- */
-.hero-door{display:none}
+.hero-door,.hero-card{display:none}
 /* ---- ordinateur ---- */
 @media (min-width:900px){
   body{font-size:16px}
   section{padding-block:88px}
   h2{font-size:32px}
   .hero{padding-top:44px}
-  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:80px;align-items:center;text-align:left;max-width:940px}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:72px;align-items:center;text-align:left;max-width:1000px}
   .hero-door{display:block;width:250px;margin:0;opacity:0;transition:opacity 2s ease .6s}
   .entered .hero-door{opacity:1}
   h1{font-size:48px;margin-bottom:16px}
@@ -260,3 +260,22 @@ body{margin:0}
 
 /* ---- avis : la question posée, au-dessus de la réponse ---- */
 .bulle .q{font-size:12.5px;letter-spacing:.01em;color:rgba(var(--t),1);filter:brightness(1.35);margin-bottom:-8px}
+
+/* ---- accroche ordinateur : carte de verre avec un verset qui respire ---- */
+@media (min-width:900px){
+  .hero-card{display:block;position:relative;isolation:isolate;margin:0;padding:42px 32px 30px;text-align:center;border-radius:30px;
+    background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.02) 55%,rgba(116,236,255,.04));
+    border:1px solid rgba(143,216,234,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 30px 80px rgba(0,0,0,.35);
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    opacity:0;transform:translateY(10px);transition:opacity 2s ease .5s,transform 2s ease .5s}
+  .entered .hero-card{opacity:1;transform:none;animation:hcfloat 9s ease-in-out 2.5s infinite}
+  .hc-glow{position:absolute;inset:-22%;z-index:-1;border-radius:50%;pointer-events:none;
+    background:radial-gradient(closest-side,rgba(116,236,255,.26),rgba(116,236,255,.07) 55%,transparent);
+    animation:hcbreathe 7s ease-in-out infinite}
+  .hc-ar{font-family:var(--arabic);font-size:31px;line-height:1.85;color:#EAFBFF;text-align:center}
+  .hc-tr{font-family:var(--display);font-style:italic;font-size:17px;line-height:1.6;color:rgba(245,245,245,.9);margin-top:14px}
+  .hc-ref{font-size:13px;color:var(--faint);margin-top:12px}
+  .hero-card .hc-pw{display:block;width:16px;height:24px;margin:24px auto 0;opacity:.85}
+}
+@keyframes hcbreathe{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes hcfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
