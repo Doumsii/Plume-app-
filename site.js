@@ -95,7 +95,7 @@ demos.forEach((d,i)=>{const b=document.createElement('button');b.className='line
   b.textContent='« '+(d.user.length>70?d.user.slice(0,d.user.indexOf('.')+1):d.user)+' »';b.onclick=()=>think(i);lines.appendChild(b);});
 let tw=0;function think(i){const bx=$('demobox');[...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));bx.classList.remove('idle');bx.classList.add('thinking');clearTimeout(tw);tw=setTimeout(()=>{show(i);bx.classList.remove('thinking');},matchMedia('(prefers-reduced-motion:reduce)').matches?0:3800);}
 $('demobox').classList.add('idle');
-const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;const openGate=()=>{gate.classList.add('open');setTimeout(()=>document.body.classList.add('entered'),RM?0:700);};gate.addEventListener('click',openGate);gate.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')openGate();});setTimeout(openGate,RM?0:1500);
+const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;const openGate=()=>{gate.classList.add('open');setTimeout(()=>document.body.classList.add('entered'),RM?0:600);};gate.addEventListener('click',openGate);gate.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')openGate();});setTimeout(openGate,RM?0:1200);
 
 const T=[['Fatima','Asbahtou, invocation du matin','audio/fatima.mp3','app/fatima.jpg'],['Oways Ahmad','Radîtu billāhi rabbā','audio/raditu.mp3','app/oways.jpg'],['Ustadh Idriss','Al-Kahf, 9-12','audio/kahf.mp3','app/idriss.jpg'],['Ustadh Mounir','Fussilat, versets 27 à 33','audio/mounir.mp3','app/mounir.jpg'],['Ustadh Muhammad','Al-Fatiha','audio/fatiha.mp3','app/muhammad.jpg']];
 const PEEK={souffle:[[['app/souffle1_p.jpg','Une citation pour l\'apaisement'],['app/souffle2_p.jpg','Une citation pour la gratitude']],'Le Souffle','Une pensée pour reprendre ton souffle, selon ton émotion du moment.'],oxygene:[[['app/voix_p.jpg','Les récitateurs du label'],['app/medit_p.jpg','Les méditations']],'Oxygène','Le Coran porté par les voix du label, et des méditations.'],heritage:[[['app/mushaf_p.jpg','Une page du Coran'],['app/ayyub_p.jpg','L\'invocation d\'Ayûb']],"L'Héritage",'Le Coran à lire et les invocations des prophètes.'],journal:[[['app/journal_bleu_p.jpg','La page du Journal'],['app/synthese_p.jpg','Le cheminement du mois']],'Le Journal','Tu écris ce que tu vis. Chaque mois, tu vois ton chemin.']};
@@ -113,24 +113,50 @@ big.onclick=()=>{const t=T[sel];if(!t[2])return;if(loaded!==sel){loaded=sel;au.s
 ['play','pause','ended','timeupdate'].forEach(e=>au.addEventListener(e,hint));
 pickR(0);
 
-/* Avis : défilement lent et continu, deux flèches pour avancer ou reculer d'une bulle. */
+/* Avis : défilement lent et continu, deux flèches pour avancer ou reculer d'une bulle, glisser au doigt ou à la souris.
+   Le doigt déplace la bande de la distance parcourue (jamais vers une position absolue), puis elle glisse un peu
+   et le défilement lent reprend après un court moment. */
 (()=>{const fr=document.querySelector('.avis .frame'),tr=fr&&fr.querySelector('.track');if(!tr)return;
 const RMv=matchMedia('(prefers-reduced-motion:reduce)').matches;const SPEED=RMv?0:22;
-let x=0,half=0,step=0,hover=false,anim=null,last=performance.now();
+let x=0,half=0,step=0,hover=false,hold=false,anim=null,vel=0,pauseUntil=0,last=performance.now();
 const measure=()=>{const b=tr.children;const n=b.length/2;const gap=parseFloat(getComputedStyle(tr).columnGap)||26;step=b[0].getBoundingClientRect().width+gap;half=step*n;};
 const wrap=()=>{if(!half)return;while(x<=-half)x+=half;while(x>0)x-=half;};
-const frame=t=>{const dt=Math.min(.1,(t-last)/1000);last=t;
+const frame=t=>{const dt=Math.min(.05,(t-last)/1000);last=t;
  if(anim){const k=Math.min(1,(t-anim.t0)/anim.d);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;x=anim.from+(anim.to-anim.from)*e;if(k>=1)anim=null;}
- else if(!hover&&!document.hidden)x-=SPEED*dt;
+ else if(hold){}
+ else if(Math.abs(vel)>8){x+=vel*dt;vel*=Math.pow(.03,dt);}
+ else{vel=0;if(!hover&&!document.hidden&&performance.now()>pauseUntil)x-=SPEED*dt;}
  wrap();tr.style.transform='translate3d('+x.toFixed(2)+'px,0,0)';requestAnimationFrame(frame);};
-const go=d=>{measure();const from=x;let to=from+(d>0?-step:step);anim={from,to,t0:performance.now(),d:RMv?1:650};};
+const go=d=>{measure();vel=0;const from=x;const to=from+(d>0?-step:step);anim={from,to,t0:performance.now(),d:RMv?1:650};pauseUntil=performance.now()+2500;};
 document.querySelector('.arw.next').addEventListener('click',()=>go(1));
 document.querySelector('.arw.prev').addEventListener('click',()=>go(-1));
 fr.addEventListener('mouseenter',()=>hover=true);fr.addEventListener('mouseleave',()=>hover=false);
-let sx=null,sx0=0;fr.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sx0=x;hover=true;anim=null;},{passive:true});
-fr.addEventListener('touchmove',e=>{if(sx===null)return;x=sx0+(e.touches[0].clientX-sx);},{passive:true});
-fr.addEventListener('touchend',()=>{sx=null;hover=false;});
+let d=null;
+fr.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;measure();d={id:e.pointerId,x0:e.clientX,y0:e.clientY,lx:e.clientX,lt:e.timeStamp,lock:null};vel=0;anim=null;});
+fr.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;
+ if(!d.lock){const ax=Math.abs(e.clientX-d.x0),ay=Math.abs(e.clientY-d.y0);if(ax<6&&ay<6)return;d.lock=ax>=ay?'x':'y';
+   if(d.lock==='x'){hold=true;try{fr.setPointerCapture(e.pointerId);}catch(_){}d.lx=e.clientX;d.lt=e.timeStamp;return;}}
+ if(d.lock!=='x')return;
+ const dx=e.clientX-d.lx,dtm=Math.max(1,e.timeStamp-d.lt)/1000;x+=dx;wrap();vel=vel*.6+(dx/dtm)*.4;d.lx=e.clientX;d.lt=e.timeStamp;});
+const end=e=>{if(!d||(e&&e.pointerId!==d.id))return;const was=d.lock==='x';d=null;hold=false;pauseUntil=performance.now()+2500;
+ if(was){vel=Math.max(-2200,Math.min(2200,vel));if(performance.now()-last>120)vel=0;}else vel=0;};
+fr.addEventListener('pointerup',end);fr.addEventListener('pointercancel',end);fr.addEventListener('lostpointercapture',end);
 addEventListener('resize',measure);measure();requestAnimationFrame(frame);})();
+
+/* Bandeau du haut : logo pour remonter, il se range quand on descend et revient quand on remonte.
+   Flèche « revenir en haut » après un bon bout de page ; note et flèche s'effacent pendant qu'on fait défiler. */
+(()=>{const bar=document.getElementById('sitebar'),up=document.getElementById('upbtn');if(!bar)return;
+const RMh=matchMedia('(prefers-reduced-motion:reduce)').matches;let lastY=scrollY,tick=false,st=0;
+const top=e=>{if(e)e.preventDefault();scrollTo({top:0,behavior:RMh?'auto':'smooth'});};
+const brand=bar.querySelector('.brand');if(brand)brand.addEventListener('click',top);if(up)up.addEventListener('click',top);
+const onScroll=()=>{const y=scrollY,peekOpen=(document.getElementById('peek')||{}).hidden===false;
+ bar.classList.toggle('scrolled',y>30);
+ if(y>260&&y>lastY+6&&!peekOpen)bar.classList.add('hide');else if(y<lastY-6||y<=260)bar.classList.remove('hide');
+ lastY=y;if(up)up.classList.toggle('show',y>innerHeight*1.3);
+ document.body.classList.add('scrolling');clearTimeout(st);st=setTimeout(()=>document.body.classList.remove('scrolling'),900);};
+addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;onScroll();});}},{passive:true});
+setTimeout(()=>document.body.classList.add('ready'),RMh?0:4200);
+onScroll();})();
 
 /* Pourquoi Plume d'O² : chemin en trois pas, qui avance seul jusqu'au premier toucher. */
 (()=>{const sec=document.getElementById('pourquoi');if(!sec)return;

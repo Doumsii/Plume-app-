@@ -118,18 +118,18 @@ footer span{margin:0 8px}
 }
 @media (prefers-reduced-motion:reduce){.door{animation:none}}
 
-.gate{position:fixed;inset:0;z-index:50;background:#050a15;display:grid;place-items:center;cursor:pointer;padding:16px;transition:opacity 2.1s ease-in-out,visibility 0s linear 2.1s}
+.gate{position:fixed;inset:0;z-index:50;background:#050a15;display:grid;place-items:center;cursor:pointer;padding:16px;transition:opacity 1.8s ease-in-out,visibility 0s linear 1.8s}
 .gate::after{content:"";position:absolute;left:50%;top:50%;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;border-radius:50%;background:radial-gradient(closest-side,rgba(190,244,255,.5),rgba(116,236,255,.12) 55%,transparent);opacity:0;transform:scale(.25);pointer-events:none}
-.gate .door{margin:0;width:min(310px,64vw,38vh);transition:transform 2.3s ease-in-out,box-shadow 2.3s ease-in-out}
+.gate .door{margin:0;width:min(310px,64vw,38vh);transition:transform 2s ease-in-out,box-shadow 2s ease-in-out}
 .gate.open{opacity:0;visibility:hidden;pointer-events:none}
 .gate.open .door{transform:scale(1.1);box-shadow:0 0 0 1px rgba(190,244,255,.5),0 0 260px rgba(116,236,255,.5);animation:none}
-.gate.open::after{animation:bloom 2.1s ease-in-out}
+.gate.open::after{animation:bloom 1.8s ease-in-out}
 @keyframes bloom{40%{opacity:.55}100%{opacity:0;transform:scale(2.2)}}
 .hero .ht>*{opacity:0;transform:translateY(16px);transition:opacity 1.8s ease,transform 1.8s ease}
 .entered .hero .ht>*{opacity:1;transform:none}
 .entered .hero .ht>:nth-child(2){transition-delay:.5s}.entered .hero .ht>:nth-child(3){transition-delay:1s}.entered .hero .ht>:nth-child(4){transition-delay:1.3s}
 .hero{padding-top:clamp(56px,12vw,120px)}
-.frame{margin-top:48px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.frame{margin-top:48px;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
 .track{display:flex;gap:26px;width:max-content;padding-block:8px;will-change:transform}
 .bulle{width:min(340px,78vw);flex:none;background:linear-gradient(165deg,rgba(var(--t),.34),rgba(var(--t),.12));border-radius:34px 34px 34px 10px;padding:26px 26px 22px;display:flex;flex-direction:column;gap:18px}
 .bulle blockquote{font-family:var(--display);font-style:italic;font-size:18px;line-height:1.6;color:rgba(245,245,245,.92)}
@@ -332,3 +332,27 @@ footer span,footer a{display:inline-block;margin-block:3px}
 #ambtoast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);z-index:46;transform:translate(-50%,10px);max-width:min(88vw,360px);padding:12px 18px;border-radius:16px;
   background:rgba(11,19,38,.92);border:1px solid rgba(143,216,234,.3);color:rgba(245,245,245,.92);font-size:14px;line-height:1.45;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
 #ambtoast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---- bandeau du haut : collant, il se range en descendant et revient en remontant ---- */
+.sitebar{position:sticky;top:0;z-index:35;border-bottom:1px solid transparent;transition:transform .5s ease,background .5s ease,border-color .5s ease,-webkit-backdrop-filter .5s,backdrop-filter .5s}
+.sitebar .top{transition:padding .4s ease}
+.sitebar.scrolled{background:rgba(11,19,38,.8);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom-color:rgba(143,216,234,.12)}
+.sitebar.scrolled .top{padding-block:12px}
+.sitebar.hide{transform:translateY(-100%)}
+.brand{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.sitebar,.sitebar .top{transition:none}}
+
+/* ---- flèche « revenir en haut », au-dessus de la note ---- */
+.upbtn{position:fixed;right:calc(env(safe-area-inset-right,0px) + 18px);bottom:calc(env(safe-area-inset-bottom,0px) + 92px);z-index:45;width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center;cursor:pointer;color:#74ECFF;
+  background:rgba(11,19,38,.72);border:1px solid rgba(143,216,234,.28);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s,border-color .4s}
+.upbtn.show{opacity:.8;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s,border-color .4s}
+.upbtn:hover{opacity:1;border-color:rgba(143,216,234,.6)}
+.upbtn svg{width:22px;height:22px;filter:drop-shadow(0 0 5px rgba(116,236,255,.6))}
+@media (min-width:900px){.upbtn{right:28px;bottom:92px}}
+
+/* ---- la note et la flèche s'effacent pendant qu'on fait défiler ---- */
+.ready .amb{transition:opacity .6s ease,border-color .4s,box-shadow .4s,transform .3s}
+.ready.scrolling .amb{opacity:.22}
+.ready.scrolling .upbtn.show{opacity:.3}
+.amb{width:46px;height:46px}
