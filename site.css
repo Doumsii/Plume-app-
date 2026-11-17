@@ -257,3 +257,6 @@ body{margin:0}
 /* ---- essai : rien ne s'affiche avant qu'on choisisse une phrase ---- */
 .idle .ans{display:none}
 .idle .lines{margin-bottom:0}
+
+/* ---- avis : la question posée, au-dessus de la réponse ---- */
+.bulle .q{font-size:12.5px;letter-spacing:.01em;color:rgba(var(--t),1);filter:brightness(1.35);margin-bottom:-8px}
