@@ -146,7 +146,7 @@ io.observe(sec);if(RMm)bar.style.display='none';})();
 
 /* Ambiance sonore du Journal : jamais lancée seule. Élément <audio> (joue aussi sur iPhone en mode silencieux),
    fondu quand le navigateur permet de régler le volume, retrait pendant une récitation du label. */
-(()=>{const b=document.getElementById('amb');if(!b)return;
+(()=>{try{const b=document.getElementById('amb');if(!b)return;
 const KEY='plume_ambiance',VOL=0.9;const a=new Audio('audio/ambiance.mp3');a.loop=true;a.preload='none';a.volume=0;
 let on=false,ducked=false,fadeT=null;
 const store=v=>{try{localStorage.setItem(KEY,v);}catch(e){}};const stored=()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}};
@@ -161,4 +161,4 @@ const au=document.getElementById('au');if(au){au.addEventListener('play',()=>{du
 document.addEventListener('visibilitychange',()=>{if(document.hidden)a.pause();else if(on&&!ducked)a.play().catch(()=>{});});
 if(stored()==='on'){on=true;ui();const go=e=>{if(e.target.closest&&e.target.closest('#amb'))return;document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);if(on)play();};
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);}
-})();
+}catch(err){if(window.console)console.error('ambiance',err);}})();
