@@ -144,26 +144,21 @@ steps.forEach((s,k)=>s.addEventListener('click',()=>{stop();show(k);}));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){run();io.disconnect();}});},{threshold:.35});
 io.observe(sec);if(RMm)bar.style.display='none';})();
 
-/* Ambiance sonore du Journal : jamais lancée seule. Fondu à l'allumage, se met en retrait pendant une récitation. */
-(()=>{const b=document.getElementById('amb');if(!b)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC){b.remove();return;}
-const KEY='plume_ambiance',VOL=0.9;let ctx=null,gain=null,src=null,buf=null,on=false,ducked=false,loading=null;
+/* Ambiance sonore du Journal : jamais lancée seule. Élément <audio> (joue aussi sur iPhone en mode silencieux),
+   fondu quand le navigateur permet de régler le volume, retrait pendant une récitation du label. */
+(()=>{const b=document.getElementById('amb');if(!b)return;
+const KEY='plume_ambiance',VOL=0.9;const a=new Audio('audio/ambiance.mp3');a.loop=true;a.preload='none';a.volume=0;
+let on=false,ducked=false,fadeT=null;
 const store=v=>{try{localStorage.setItem(KEY,v);}catch(e){}};const stored=()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}};
-const ramp=(v,s)=>{if(!gain)return;const t=ctx.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setValueAtTime(gain.gain.value,t);gain.gain.linearRampToValueAtTime(v,t+s);};
-const load=()=>loading||(loading=fetch('audio/ambiance.mp3').then(r=>r.arrayBuffer()).then(a=>new Promise((ok,ko)=>ctx.decodeAudioData(a,ok,ko))).then(d=>{buf=d;}));
+const fade=(to,ms,done)=>{clearInterval(fadeT);const from=a.volume,t0=performance.now();
+  fadeT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);try{a.volume=from+(to-from)*k;}catch(e){}if(k>=1){clearInterval(fadeT);done&&done();}},40);};
 const ui=()=>{b.setAttribute('aria-pressed',on?'true':'false');b.setAttribute('aria-label',on?"Couper l'ambiance sonore":"Activer l'ambiance sonore du Journal");};
-const start=async()=>{if(!ctx){ctx=new AC();gain=ctx.createGain();gain.gain.value=0;gain.connect(ctx.destination);}
-  if(ctx.state==='suspended')await ctx.resume();await load();
-  if(!src){src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);src.start();}
-  ramp(ducked?0:VOL,3);};
-const stop=()=>{ramp(0,1.2);};
-const toggle=()=>{on=!on;ui();store(on?'on':'off');if(on)start().catch(()=>{on=false;ui();});else stop();};
-b.addEventListener('click',toggle);
-/* Récitation du label : l'ambiance s'efface, puis revient. */
-const au=document.getElementById('au');if(au){au.addEventListener('play',()=>{ducked=true;if(on)ramp(0,0.8);});
-  const back=()=>{ducked=false;if(on)ramp(VOL,2.5);};au.addEventListener('pause',back);au.addEventListener('ended',back);}
-/* Onglet caché : on coupe ; retour : on reprend si c'était allumé. */
-document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend();else if(on)ctx.resume();});
-/* Choix retenu : si l'ambiance était allumée, elle reprend au premier geste du visiteur (le navigateur l'exige). */
-if(stored()==='on'){on=true;ui();const go=()=>{document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);if(on)start().catch(()=>{});};
+const play=()=>{const p=a.play();if(p&&p.catch)p.catch(()=>{on=false;ui();});fade(ducked?0:VOL,3000);};
+const stop=()=>fade(0,1200,()=>{if(!on)a.pause();});
+b.addEventListener('click',()=>{on=!on;ui();store(on?'on':'off');if(on)play();else stop();});
+const au=document.getElementById('au');if(au){au.addEventListener('play',()=>{ducked=true;if(on)fade(0,800,()=>{if(ducked)a.pause();});});
+  const back=()=>{ducked=false;if(on){a.play().catch(()=>{});fade(VOL,2500);}};au.addEventListener('pause',back);au.addEventListener('ended',back);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)a.pause();else if(on&&!ducked)a.play().catch(()=>{});});
+if(stored()==='on'){on=true;ui();const go=e=>{if(e.target.closest&&e.target.closest('#amb'))return;document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);if(on)play();};
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);}
 })();
