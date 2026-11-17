@@ -93,8 +93,8 @@ function show(i){const d=demos[i];
   [...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));}
 demos.forEach((d,i)=>{const b=document.createElement('button');b.className='line';b.type='button';b.id='line-'+i;
   b.textContent='« '+(d.user.length>70?d.user.slice(0,d.user.indexOf('.')+1):d.user)+' »';b.onclick=()=>think(i);lines.appendChild(b);});
-let tw=0;function think(i){const bx=$('demobox');[...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));bx.classList.add('thinking');clearTimeout(tw);tw=setTimeout(()=>{show(i);bx.classList.remove('thinking');},matchMedia('(prefers-reduced-motion:reduce)').matches?0:3800);}
-show(0);
+let tw=0;function think(i){const bx=$('demobox');[...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));bx.classList.remove('idle');bx.classList.add('thinking');clearTimeout(tw);tw=setTimeout(()=>{show(i);bx.classList.remove('thinking');},matchMedia('(prefers-reduced-motion:reduce)').matches?0:3800);}
+$('demobox').classList.add('idle');
 const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;const openGate=()=>{gate.classList.add('open');setTimeout(()=>document.body.classList.add('entered'),RM?0:700);};gate.addEventListener('click',openGate);gate.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')openGate();});setTimeout(openGate,RM?0:1500);
 
 const T=[['Fatima','Asbahtou, invocation du matin','audio/fatima.mp3','app/fatima.jpg'],['Oways Ahmad','Radîtu billāhi rabbā','audio/raditu.mp3','app/oways.jpg'],['Ustadh Idriss','Al-Kahf, 9-12','audio/kahf.mp3','app/idriss.jpg'],['Ustadh Mounir','Fussilat, versets 27 à 33','audio/mounir.mp3','app/mounir.jpg'],['Ustadh Muhammad','Al-Fatiha','audio/fatiha.mp3','app/muhammad.jpg']];
@@ -112,3 +112,22 @@ T.forEach((t,i)=>{const b=document.createElement('button');b.className='pick';b.
 big.onclick=()=>{const t=T[sel];if(!t[2])return;if(loaded!==sel){loaded=sel;au.src=t[2];au.play().catch(()=>{});}else{au.paused?au.play():au.pause();}};
 ['play','pause','ended','timeupdate'].forEach(e=>au.addEventListener(e,hint));
 pickR(0);
+
+/* Avis : défilement lent et continu, deux flèches pour avancer ou reculer d'une bulle. */
+(()=>{const fr=document.querySelector('.avis .frame'),tr=fr&&fr.querySelector('.track');if(!tr)return;
+const RMv=matchMedia('(prefers-reduced-motion:reduce)').matches;const SPEED=RMv?0:22;
+let x=0,half=0,step=0,hover=false,anim=null,last=performance.now();
+const measure=()=>{const b=tr.children;const n=b.length/2;const gap=parseFloat(getComputedStyle(tr).columnGap)||26;step=b[0].getBoundingClientRect().width+gap;half=step*n;};
+const wrap=()=>{if(!half)return;while(x<=-half)x+=half;while(x>0)x-=half;};
+const frame=t=>{const dt=Math.min(.1,(t-last)/1000);last=t;
+ if(anim){const k=Math.min(1,(t-anim.t0)/anim.d);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;x=anim.from+(anim.to-anim.from)*e;if(k>=1)anim=null;}
+ else if(!hover&&!document.hidden)x-=SPEED*dt;
+ wrap();tr.style.transform='translate3d('+x.toFixed(2)+'px,0,0)';requestAnimationFrame(frame);};
+const go=d=>{measure();const from=x;let to=from+(d>0?-step:step);anim={from,to,t0:performance.now(),d:RMv?1:650};};
+document.querySelector('.arw.next').addEventListener('click',()=>go(1));
+document.querySelector('.arw.prev').addEventListener('click',()=>go(-1));
+fr.addEventListener('mouseenter',()=>hover=true);fr.addEventListener('mouseleave',()=>hover=false);
+let sx=null,sx0=0;fr.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sx0=x;hover=true;anim=null;},{passive:true});
+fr.addEventListener('touchmove',e=>{if(sx===null)return;x=sx0+(e.touches[0].clientX-sx);},{passive:true});
+fr.addEventListener('touchend',()=>{sx=null;hover=false;});
+addEventListener('resize',measure);measure();requestAnimationFrame(frame);})();

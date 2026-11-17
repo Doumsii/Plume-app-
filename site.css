@@ -130,9 +130,7 @@ footer span{margin:0 8px}
 .entered .hero .ht>:nth-child(2){transition-delay:.5s}.entered .hero .ht>:nth-child(3){transition-delay:1s}.entered .hero .ht>:nth-child(4){transition-delay:1.3s}
 .hero{padding-top:clamp(56px,12vw,120px)}
 .frame{margin-top:48px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
-.track{display:flex;gap:26px;width:max-content;animation:drift 110s linear infinite;padding-block:8px}
-.frame:hover .track,.frame:active .track,.frame:focus-within .track{animation-play-state:paused}
-@keyframes drift{to{transform:translateX(calc(-50% - 13px))}}
+.track{display:flex;gap:26px;width:max-content;padding-block:8px;will-change:transform}
 .bulle{width:min(340px,78vw);flex:none;background:linear-gradient(165deg,rgba(var(--t),.34),rgba(var(--t),.12));border-radius:34px 34px 34px 10px;padding:26px 26px 22px;display:flex;flex-direction:column;gap:18px}
 .bulle blockquote{font-family:var(--display);font-style:italic;font-size:18px;line-height:1.6;color:rgba(245,245,245,.92)}
 .bulle figcaption{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--soft);margin-top:auto}
@@ -158,7 +156,7 @@ footer span{margin:0 8px}
 .r:nth-child(2){margin-top:0}.r:nth-child(even){margin-top:40px}
 .r[disabled]{cursor:default}.r[disabled] i{color:var(--faint)}
 @media (max-width:760px){.doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 18px}.screens{margin-top:64px}.r:nth-child(even){margin-top:0}}
-@media (prefers-reduced-motion:reduce){.track{animation:none}.frame{overflow-x:auto}.gate,.gate .door,.hero .ht>*,.hero-door{transition:none}.gate.open::after{animation:none}.wait i{animation:none}}
+@media (prefers-reduced-motion:reduce){.gate,.gate .door,.hero .ht>*,.hero-door{transition:none}.gate.open::after{animation:none}.wait i{animation:none}}
 
 .player{text-align:center;margin-top:52px}
 .big{font:inherit;background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
@@ -244,3 +242,18 @@ body{margin:0}
   .legal-main h1{font-size:34px;margin-bottom:28px}
   .legal-main h2{font-size:19px;margin:30px 0 8px}
 }
+
+/* ---- avis : deux flèches pour défiler plus vite ---- */
+.avis{position:relative;margin-top:48px}
+.avis .frame{margin-top:0}
+.arw{position:absolute;top:50%;z-index:2;width:44px;height:44px;margin-top:-22px;display:grid;place-items:center;color:#74ECFF;background:none;border:0;padding:0;cursor:pointer;opacity:.78;transition:opacity .3s,transform .3s;filter:drop-shadow(0 0 5px rgba(116,236,255,.75)) drop-shadow(0 0 14px rgba(116,236,255,.4))}
+.arw svg{width:26px;height:26px}
+.arw.prev{left:max(6px,calc(50% - 640px))}
+.arw.next{right:max(6px,calc(50% - 640px))}
+.arw:hover,.arw:focus-visible{opacity:1}
+.arw.prev:hover{transform:translateX(-2px)}.arw.next:hover{transform:translateX(2px)}
+.arw:focus-visible{outline:1px solid rgba(116,236,255,.5);outline-offset:2px;border-radius:50%}
+
+/* ---- essai : rien ne s'affiche avant qu'on choisisse une phrase ---- */
+.idle .ans{display:none}
+.idle .lines{margin-bottom:0}
