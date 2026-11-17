@@ -131,3 +131,15 @@ let sx=null,sx0=0;fr.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;s
 fr.addEventListener('touchmove',e=>{if(sx===null)return;x=sx0+(e.touches[0].clientX-sx);},{passive:true});
 fr.addEventListener('touchend',()=>{sx=null;hover=false;});
 addEventListener('resize',measure);measure();requestAnimationFrame(frame);})();
+
+/* Pourquoi Plume d'O² : chemin en trois pas, qui avance seul jusqu'au premier toucher. */
+(()=>{const sec=document.getElementById('pourquoi');if(!sec)return;
+const steps=[...sec.querySelectorAll('.mq-step')],cards=[...sec.querySelectorAll('.mq-card')];
+const bar=document.createElement('div');bar.className='mq-bar';bar.innerHTML='<b></b>';sec.querySelector('.mq-path').appendChild(bar);const fill=bar.firstChild;
+let cur=0,timer=null,stopped=false;const RMm=matchMedia('(prefers-reduced-motion:reduce)').matches;const DUR=9000;
+const show=i=>{cur=i;steps.forEach((s,k)=>{s.classList.toggle('on',k===i);s.setAttribute('aria-selected',k===i?'true':'false');});cards.forEach((c,k)=>c.classList.toggle('on',k===i));};
+const run=()=>{if(stopped||RMm)return;fill.style.transition='none';fill.style.transform='scaleX(0)';void fill.offsetWidth;fill.style.transition='transform '+DUR+'ms linear';fill.style.transform='scaleX(1)';clearTimeout(timer);timer=setTimeout(()=>{show((cur+1)%steps.length);run();},DUR);};
+const stop=()=>{stopped=true;clearTimeout(timer);bar.style.visibility='hidden';};
+steps.forEach((s,k)=>s.addEventListener('click',()=>{stop();show(k);}));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){run();io.disconnect();}});},{threshold:.35});
+io.observe(sec);if(RMm)bar.style.display='none';})();
