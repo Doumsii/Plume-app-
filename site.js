@@ -145,20 +145,39 @@ const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){run()
 io.observe(sec);if(RMm)bar.style.display='none';})();
 
 /* Ambiance sonore du Journal : jamais lancée seule. Élément <audio> (joue aussi sur iPhone en mode silencieux),
-   fondu quand le navigateur permet de régler le volume, retrait pendant une récitation du label. */
-(()=>{try{const b=document.getElementById('amb');if(!b)return;
-const KEY='plume_ambiance',VOL=0.9;const a=new Audio('audio/ambiance.mp3');a.loop=true;a.preload='none';a.volume=0;
-let on=false,ducked=false,fadeT=null;
+   fondu quand le navigateur permet de régler le volume, retrait pendant une récitation du label.
+   Si le fichier ne se charge pas, un petit message le dit et l'état « allumé » n'est jamais retenu. */
+(()=>{try{
+const b=document.getElementById('amb');if(!b)return;
+const KEY='plume_ambiance',VOL=0.9,SRC='audio/ambiance.mp3?v=2';
+let a=null,on=false,ducked=false,fadeT=null,toastT=null;
 const store=v=>{try{localStorage.setItem(KEY,v);}catch(e){}};const stored=()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}};
-const fade=(to,ms,done)=>{clearInterval(fadeT);const from=a.volume,t0=performance.now();
-  fadeT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);try{a.volume=from+(to-from)*k;}catch(e){}if(k>=1){clearInterval(fadeT);done&&done();}},40);};
+const toast=m=>{let t=document.getElementById('ambtoast');if(!t){t=document.createElement('div');t.id='ambtoast';t.setAttribute('role','status');document.body.appendChild(t);}
+  t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),4500);};
 const ui=()=>{b.setAttribute('aria-pressed',on?'true':'false');b.setAttribute('aria-label',on?"Couper l'ambiance sonore":"Activer l'ambiance sonore du Journal");};
-const play=()=>{const p=a.play();if(p&&p.catch)p.catch(()=>{on=false;ui();});fade(ducked?0:VOL,3000);};
-const stop=()=>fade(0,1200,()=>{if(!on)a.pause();});
-b.addEventListener('click',()=>{on=!on;ui();store(on?'on':'off');if(on)play();else stop();});
-const au=document.getElementById('au');if(au){au.addEventListener('play',()=>{ducked=true;if(on)fade(0,800,()=>{if(ducked)a.pause();});});
-  const back=()=>{ducked=false;if(on){a.play().catch(()=>{});fade(VOL,2500);}};au.addEventListener('pause',back);au.addEventListener('ended',back);}
-document.addEventListener('visibilitychange',()=>{if(document.hidden)a.pause();else if(on&&!ducked)a.play().catch(()=>{});});
-if(stored()==='on'){on=true;ui();const go=e=>{if(e.target.closest&&e.target.closest('#amb'))return;document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);if(on)play();};
+const audio=()=>{if(!a){a=new Audio();a.loop=true;a.preload='auto';a.volume=0;a.src=SRC;}return a;};
+const setVol=v=>{try{a.volume=Math.max(0,Math.min(1,v));}catch(e){}};
+const fade=(to,ms,done)=>{clearInterval(fadeT);if(!a)return;const from=a.volume,t0=performance.now();
+  fadeT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);setVol(from+(to-from)*k);if(k>=1){clearInterval(fadeT);done&&done();}},40);};
+const fail=err=>{if(window.console)console.error('ambiance',err&&err.name,err&&err.message,a&&a.error&&a.error.code);
+  on=false;ui();store('off');clearInterval(fadeT);
+  const blocked=err&&err.name==='NotAllowedError';
+  toast(blocked?"Touche à nouveau la note pour lancer le son.":"L'ambiance sonore n'a pas pu se charger. Réessaie dans un instant.");};
+const play=()=>{audio();setVol(0);const p=a.play();
+  const go=()=>fade(ducked?0:VOL,3000);
+  if(p&&p.then)p.then(go,fail);else go();};
+const stop=()=>fade(0,1200,()=>{if(!on&&a)a.pause();});
+b.addEventListener('click',()=>{if(on){on=false;ui();store('off');stop();}else{on=true;ui();play();}});
+/* Un son déjà lancé n'est retenu « allumé » que s'il a vraiment démarré. */
+const mark=()=>{if(on)store('on');};
+audio().addEventListener('playing',mark);
+a.addEventListener('error',()=>{if(on)fail(a.error||{name:'MediaError'});});
+const au=document.getElementById('au');if(au){au.addEventListener('play',()=>{ducked=true;if(on)fade(0,800,()=>{if(ducked&&a)a.pause();});});
+  const back=()=>{ducked=false;if(on&&a){const p=a.play();if(p&&p.catch)p.catch(()=>{});fade(VOL,2500);}};au.addEventListener('pause',back);au.addEventListener('ended',back);}
+document.addEventListener('visibilitychange',()=>{if(!a)return;if(document.hidden)a.pause();else if(on&&!ducked){const p=a.play();if(p&&p.catch)p.catch(()=>{});}});
+/* Retour d'un visiteur qui l'avait allumée : on attend son premier geste, puis on essaie. L'icône reste « éteinte » tant que rien ne joue. */
+if(stored()==='on'){const go=e=>{if(e.target.closest&&e.target.closest('#amb'))return;document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);
+  if(on)return;on=true;ui();const p=(audio(),setVol(0),a.play());const ok=()=>fade(ducked?0:VOL,3000);
+  if(p&&p.then)p.then(ok,()=>{on=false;ui();});else ok();};
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);}
 }catch(err){if(window.console)console.error('ambiance',err);}})();

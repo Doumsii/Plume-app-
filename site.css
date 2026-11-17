@@ -328,3 +328,7 @@ footer span,footer a{display:inline-block;margin-block:3px}
 @media (prefers-reduced-motion:reduce){.amb{animation:none}}
 
 @media (min-width:900px){.amb{bottom:28px;right:28px}}
+
+#ambtoast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);z-index:46;transform:translate(-50%,10px);max-width:min(88vw,360px);padding:12px 18px;border-radius:16px;
+  background:rgba(11,19,38,.92);border:1px solid rgba(143,216,234,.3);color:rgba(245,245,245,.92);font-size:14px;line-height:1.45;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
+#ambtoast.on{opacity:1;transform:translate(-50%,0)}
