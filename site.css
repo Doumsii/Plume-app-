@@ -392,13 +392,18 @@ body{margin:0}
 .hap input{width:44px;height:44px}
 
 /* ---- portes : sur téléphone, une rangée qu'on fait glisser, avec deux flèches ---- */
-.dwrap .dprev,.dwrap .dnext{display:none}
 @media (max-width:760px){
   .dwrap{position:relative;margin:36px -22px 0}
   .dwrap .doors{display:flex;gap:16px;margin-top:0;padding:22px calc(50% - min(27vw,115px)) 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
   .dwrap .doors::-webkit-scrollbar{display:none}
   .dwrap .doors figure{flex:0 0 min(54vw,230px);max-width:none;scroll-snap-align:center;scroll-snap-stop:always}
-  .dwrap .dprev,.dwrap .dnext{display:grid;top:38%;margin-top:0;background:rgba(11,19,38,.55);border-radius:50%;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:opacity .35s}
-  .dwrap .dprev{left:calc(50% - min(27vw,115px) - 22px)}.dwrap .dnext{right:calc(50% - min(27vw,115px) - 22px)}
-  .dwrap .arw[disabled]{opacity:0;pointer-events:none}
+}
+
+/* ---- petits points sous les portes (téléphone seulement) ---- */
+.ddots{display:none}
+@media (max-width:760px){
+  .ddots{display:flex;justify-content:center;gap:0;margin-top:10px}
+  .ddots button{width:28px;height:28px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+  .ddots button::before{content:"";width:7px;height:7px;border-radius:50%;background:rgba(245,245,245,.28);transition:background .35s,transform .35s,box-shadow .35s}
+  .ddots button[aria-current="true"]::before{background:var(--cyan);transform:scale(1.25);box-shadow:0 0 8px rgba(116,236,255,.6)}
 }

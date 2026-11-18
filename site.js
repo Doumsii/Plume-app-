@@ -211,11 +211,10 @@ if(stored()==='on'){const go=e=>{if(e.target.closest&&e.target.closest('#amb'))r
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);}
 }catch(err){if(window.console)console.error('ambiance',err);}})();
 
-/* Portes sur téléphone : flèches pour passer de l'une à l'autre (le doigt glisse aussi, nativement). */
-(()=>{const w=document.getElementById('dwrap');if(!w)return;const r=w.querySelector('.doors'),p=w.querySelector('.dprev'),n=w.querySelector('.dnext');if(!r||!p||!n)return;
-const f=()=>r.querySelector('figure');const stepW=()=>{const a=r.querySelectorAll('figure');return a.length>1?a[1].offsetLeft-a[0].offsetLeft:(f()?f().offsetWidth:0);};
-const upd=()=>{const m=r.scrollWidth-r.clientWidth;p.disabled=r.scrollLeft<4;n.disabled=r.scrollLeft>m-4;};
+/* Portes sur téléphone : les petits points suivent la porte affichée et permettent d'y aller. */
+(()=>{const w=document.getElementById('dwrap'),dd=document.getElementById('ddots');if(!w||!dd)return;const r=w.querySelector('.doors'),fs=[...r.querySelectorAll('figure')],bs=[...dd.children];
 const RMd=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const go=d=>{tick();r.scrollBy({left:d*stepW(),behavior:RMd?'auto':'smooth'});};
-p.addEventListener('click',()=>go(-1));n.addEventListener('click',()=>go(1));
+const cur=()=>{const mid=r.scrollLeft+r.clientWidth/2;let b=0,bd=1e9;fs.forEach((f,i)=>{const d=Math.abs(f.offsetLeft+f.offsetWidth/2-mid);if(d<bd){bd=d;b=i;}});return b;};
+const upd=()=>{const k=cur();bs.forEach((b,i)=>{if(i===k)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});};
+bs.forEach((b,i)=>b.addEventListener('click',()=>{tick();const f=fs[i];r.scrollTo({left:f.offsetLeft+f.offsetWidth/2-r.clientWidth/2,behavior:RMd?'auto':'smooth'});}));
 r.addEventListener('scroll',()=>requestAnimationFrame(upd),{passive:true});addEventListener('resize',upd);upd();})();
