@@ -407,3 +407,12 @@ body{margin:0}
   .ddots button::before{content:"";width:7px;height:7px;border-radius:50%;background:rgba(245,245,245,.28);transition:background .35s,transform .35s,box-shadow .35s}
   .ddots button[aria-current="true"]::before{background:var(--cyan);transform:scale(1.25);box-shadow:0 0 8px rgba(116,236,255,.6)}
 }
+
+/* ---- plume de fin : seule, centrée entre « Tu reviens… » et « Sois là… », halo qui respire (comme la vidéo) ---- */
+#pourquoi{padding-bottom:0}
+.end{padding-top:0}
+.end-mark{position:relative;width:150px;height:150px;margin:clamp(56px,10vw,104px) auto;display:grid;place-items:center}
+.em-halo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(closest-side,rgba(116,236,255,.36),rgba(116,236,255,.13) 55%,rgba(116,236,255,0));animation:emb 3.8s ease-in-out infinite}
+.end-mark img{position:relative;display:block;height:72px;width:auto;filter:drop-shadow(0 0 6px rgba(116,236,255,.4))}
+@keyframes emb{0%,100%{transform:scale(.78);opacity:.55}50%{transform:scale(1.08);opacity:1}}
+@media (prefers-reduced-motion:reduce){.em-halo{animation:none;opacity:.8}}
