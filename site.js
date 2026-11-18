@@ -92,10 +92,10 @@ function show(i){const d=demos[i];
   $('d-sira').textContent=d.sira;$('d-sira-src').textContent=d.siraSrc;$('d-action').textContent=d.action;
   [...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));}
 demos.forEach((d,i)=>{const b=document.createElement('button');b.className='line';b.type='button';b.id='line-'+i;
-  b.textContent='« '+(d.user.length>70?d.user.slice(0,d.user.indexOf('.')+1):d.user)+' »';b.onclick=()=>think(i);lines.appendChild(b);});
+  b.textContent='« '+(d.user.length>70?d.user.slice(0,d.user.indexOf('.')+1):d.user)+' »';b.onclick=()=>{tick();think(i);};lines.appendChild(b);});
 let tw=0;function think(i){const bx=$('demobox');[...lines.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i?'true':'false'));bx.classList.remove('idle');bx.classList.add('thinking');clearTimeout(tw);tw=setTimeout(()=>{show(i);bx.classList.remove('thinking');},matchMedia('(prefers-reduced-motion:reduce)').matches?0:3800);}
 $('demobox').classList.add('idle');
-const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;const openGate=()=>{gate.classList.add('open');setTimeout(()=>document.body.classList.add('entered'),RM?0:600);};gate.addEventListener('click',openGate);gate.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')openGate();});setTimeout(openGate,RM?0:1200);
+const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;const openGate=()=>{gate.classList.add('open');setTimeout(()=>document.body.classList.add('entered'),RM?0:500);};gate.addEventListener('click',()=>{tick();openGate();});gate.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')openGate();});setTimeout(openGate,RM?0:1000);
 
 const T=[['Fatima','Asbahtou, invocation du matin','audio/fatima.mp3','app/fatima.jpg','La voix de l\'application',[]],['Oways Ahmad','Radîtu billāhi rabbā','audio/raditu.mp3','app/oways.jpg','Fondateur du label',[['YouTube','https://youtube.com/@plumedo2_records']]],['Ustadh Idriss','Al-Kahf, 9-12','audio/kahf.mp3','app/idriss.jpg','Détenteur d\'une ijaza en Hafs, Instant Coranique',[['YouTube','https://youtube.com/@instantcoranique'],['Instagram','https://www.instagram.com/instant_coranique'],['TikTok','https://www.tiktok.com/@instant_coranique']]],['Ustadh Mounir','Fussilat, versets 27 à 33','audio/mounir.mp3','app/mounir.jpg','Fondateur de Bibliodin, doctorant en théologie islamique',[['Bibliodin','https://bibliodin.com/'],['Instagram','https://www.instagram.com/mounirmonprofdarabe'],['YouTube','https://youtube.com/@mounirmonprofdarabe8460']]],['Ustadh Muhammad','Al-Fatiha','audio/fatiha.mp3','app/muhammad.jpg','Fondateur du centre Muddakir, professeur de Coran et d\'arabe',[['YouTube','https://youtube.com/@muddakkir']]]];
 const PEEK={souffle:[[['app/souffle1_p.jpg','Une citation pour l\'apaisement'],['app/souffle2_p.jpg','Une citation pour la gratitude']],'Le Souffle','Une pensée pour reprendre ton souffle, selon ton émotion du moment.'],oxygene:[[['app/voix_p.jpg','Les récitateurs du label'],['app/medit_p.jpg','Les méditations']],'Oxygène','Le Coran porté par les voix du label, et des méditations.'],heritage:[[['app/mushaf_p.jpg','Une page du Coran'],['app/ayyub_p.jpg','L\'invocation d\'Ayûb']],"L'Héritage",'Le Coran à lire et les invocations des prophètes.'],journal:[[['app/journal_bleu_p.jpg','La page du Journal'],['app/synthese_p.jpg','Le cheminement du mois']],'Le Journal','Tu écris ce que tu vis. Chaque mois, tu vois ton chemin.']};
@@ -111,7 +111,7 @@ const au=$('au'),picks=$('picks'),big=$('big');let sel=0,loaded=-1;
 const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 function hint(){const t=T[sel];$('bigtime').textContent=!t[2]?'':(loaded===sel&&!au.paused?fmt(au.currentTime):'Toucher le portrait pour écouter');big.classList.toggle('on',loaded===sel&&!au.paused);}
 function pickR(i){sel=i;const t=T[i];$('bigimg').src=t[3];$('bigname').textContent=t[0];$('bigtrack').textContent=t[1];$('bigrole').textContent=t[4]||'';const L=$('biglinks');L.textContent='';(t[5]||[]).forEach(l=>{const a=document.createElement('a');a.href=l[1];a.target='_blank';a.rel='noopener';a.textContent=l[0]+' \u2197';L.appendChild(a);});big.setAttribute('aria-label',t[2]?'Écouter '+t[0]:t[0]);[...picks.children].forEach((b,k)=>b.setAttribute('aria-pressed',k===i?'true':'false'));if(loaded!==i&&!au.paused){au.pause();}hint();}
-T.forEach((t,i)=>{const b=document.createElement('button');b.className='pick';b.type='button';b.id='pick-'+i;b.setAttribute('aria-label',t[0]);const im=document.createElement('img');im.src=t[3];im.alt='';im.loading='lazy';b.append(im);b.onclick=()=>pickR(i);picks.appendChild(b);});
+T.forEach((t,i)=>{const b=document.createElement('button');b.className='pick';b.type='button';b.id='pick-'+i;b.setAttribute('aria-label',t[0]);const im=document.createElement('img');im.src=t[3];im.alt='';im.loading='lazy';b.append(im);b.onclick=()=>{tick();pickR(i);};picks.appendChild(b);});
 big.onclick=()=>{const t=T[sel];if(!t[2])return;if(loaded!==sel){loaded=sel;au.src=t[2];au.play().catch(()=>{});}else{au.paused?au.play():au.pause();}};
 ['play','pause','ended','timeupdate'].forEach(e=>au.addEventListener(e,hint));
 pickR(0);
@@ -131,8 +131,8 @@ const frame=t=>{const dt=Math.min(.05,(t-last)/1000);last=t;
  else{vel=0;if(!hover&&!document.hidden&&performance.now()>pauseUntil)x-=SPEED*dt;}
  wrap();tr.style.transform='translate3d('+x.toFixed(2)+'px,0,0)';requestAnimationFrame(frame);};
 const go=d=>{measure();vel=0;const from=x;const to=from+(d>0?-step:step);anim={from,to,t0:performance.now(),d:RMv?1:650};pauseUntil=performance.now()+2500;};
-document.querySelector('.arw.next').addEventListener('click',()=>go(1));
-document.querySelector('.arw.prev').addEventListener('click',()=>go(-1));
+document.querySelector('.arw.next').addEventListener('click',()=>{tick();go(1);});
+document.querySelector('.arw.prev').addEventListener('click',()=>{tick();go(-1);});
 fr.addEventListener('mouseenter',()=>hover=true);fr.addEventListener('mouseleave',()=>hover=false);
 let d=null;
 fr.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;measure();d={id:e.pointerId,x0:e.clientX,y0:e.clientY,lx:e.clientX,lt:e.timeStamp,lock:null};vel=0;anim=null;});
