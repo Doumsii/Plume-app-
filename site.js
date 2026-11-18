@@ -135,12 +135,12 @@ let d=null;
 fr.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;measure();d={id:e.pointerId,x0:e.clientX,y0:e.clientY,lx:e.clientX,lt:e.timeStamp,lock:null};vel=0;anim=null;});
 fr.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;
  if(!d.lock){const ax=Math.abs(e.clientX-d.x0),ay=Math.abs(e.clientY-d.y0);if(ax<6&&ay<6)return;d.lock=ax>=ay?'x':'y';
-   if(d.lock==='x'){hold=true;try{fr.setPointerCapture(e.pointerId);}catch(_){}d.lx=e.clientX;d.lt=e.timeStamp;return;}}
+   if(d.lock==='x'){hold=true;if(e.pointerType==='mouse'){try{fr.setPointerCapture(e.pointerId);}catch(_){}}d.lx=e.clientX;d.lt=e.timeStamp;return;}}
  if(d.lock!=='x')return;
  const dx=e.clientX-d.lx,dtm=Math.max(1,e.timeStamp-d.lt)/1000;x+=dx;wrap();vel=vel*.6+(dx/dtm)*.4;d.lx=e.clientX;d.lt=e.timeStamp;});
 const end=e=>{if(!d||(e&&e.pointerId!==d.id))return;const was=d.lock==='x';d=null;hold=false;pauseUntil=performance.now()+2500;
  if(was){vel=Math.max(-2200,Math.min(2200,vel));if(performance.now()-last>120)vel=0;}else vel=0;};
-fr.addEventListener('pointerup',end);fr.addEventListener('pointercancel',end);fr.addEventListener('lostpointercapture',end);
+fr.addEventListener('pointerup',end);fr.addEventListener('pointercancel',end);fr.style.touchAction='pan-y';
 addEventListener('resize',measure);measure();requestAnimationFrame(frame);})();
 
 /* Bandeau du haut : logo pour remonter, il se range quand on descend et revient quand on remonte.
