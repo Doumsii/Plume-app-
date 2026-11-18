@@ -125,7 +125,7 @@ h1 em{font-style:italic;color:var(--gold)}
 @keyframes bloom{40%{opacity:.55}100%{opacity:0;transform:scale(2.2)}}
 .hero .ht>*{opacity:0;transform:translateY(16px);transition:opacity 1.8s ease,transform 1.8s ease}
 .entered .hero .ht>*{opacity:1;transform:none}
-.entered .hero .ht>:nth-child(2){transition-delay:.5s}.entered .hero .ht>:nth-child(3){transition-delay:1s}.entered .hero .ht>:nth-child(4){transition-delay:1.3s}
+.entered .hero .ht>:nth-child(2){transition-delay:.5s}.entered .hero .ht>:nth-child(3){transition-delay:1s}.entered .hero .ht>:nth-child(4){transition-delay:1.3s}.entered .hero .ht>:nth-child(5){transition-delay:1.5s}
 .hero{padding-top:clamp(56px,12vw,120px)}
 .frame{margin-top:48px;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
 .track{display:flex;gap:26px;width:max-content;padding-block:8px;will-change:transform}
@@ -330,7 +330,7 @@ body{margin:0}
 #ambtoast.on{opacity:1;transform:translate(-50%,0)}
 
 /* ---- bandeau du haut : collant, il se range en descendant et revient en remontant ---- */
-.sitebar{position:sticky;top:0;z-index:35;border-bottom:1px solid transparent;transition:transform .5s ease,background .5s ease,border-color .5s ease,-webkit-backdrop-filter .5s,backdrop-filter .5s}
+.sitebar{position:sticky;top:0;z-index:35;border-bottom:1px solid rgba(245,245,245,.09);transition:transform .5s ease,background .5s ease,border-color .5s ease,-webkit-backdrop-filter .5s,backdrop-filter .5s}
 .sitebar .top{transition:padding .4s ease}
 .sitebar.scrolled{background:rgba(11,19,38,.8);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom-color:rgba(143,216,234,.12)}
 .sitebar.scrolled .top{padding-block:12px}
@@ -416,3 +416,19 @@ body{margin:0}
 .end-mark img{position:relative;display:block;height:72px;width:auto;filter:drop-shadow(0 0 6px rgba(116,236,255,.4))}
 @keyframes emb{0%,100%{transform:scale(.78);opacity:.55}50%{transform:scale(1.08);opacity:1}}
 @media (prefers-reduced-motion:reduce){.em-halo{animation:none;opacity:.8}}
+
+/* ---- schéma sous l'accroche : tu écris, un verset, une invocation, une action ---- */
+.loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:30px auto 34px;max-width:540px}
+.loop .st{position:relative;display:flex;flex-direction:column;align-items:center;gap:11px;padding:0 6px;font-size:13px;line-height:1.4;color:var(--soft);text-align:center}
+.loop .st i{width:9px;height:9px;border-radius:50%;background:rgba(245,245,245,.25)}
+.loop .st i.g{background:var(--gold);box-shadow:0 0 14px rgba(191,160,106,.55)}
+.loop .st i.c{background:var(--cyan);box-shadow:0 0 14px rgba(116,236,255,.45)}
+.loop .st i.w{background:#F5F5F5;box-shadow:0 0 14px rgba(245,245,245,.35)}
+.loop .st:not(:last-child)::after{content:"\2192";position:absolute;right:-7px;top:-6px;font-size:13px;color:rgba(245,245,245,.24)}
+.hero .loop{margin-top:6px}
+@media (min-width:900px){.hero .loop{margin:0 0 30px;max-width:480px}.loop .st{font-size:13.5px}}
+
+/* ---- bouton « Me prévenir » : pilule plus fine ---- */
+.go{border-radius:999px;font-size:15px;padding:9px 24px 9px 11px;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.go .halo{width:28px;height:28px}
+@media (min-width:900px){.go{font-size:15px;padding:9px 24px 9px 11px;border-radius:999px;gap:10px}.go .halo{width:28px;height:28px}}
