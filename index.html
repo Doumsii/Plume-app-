@@ -74,12 +74,12 @@
 <section><div class="col wide">
   <div class="col" style="padding:0"><h2 class="center">On y entre sans se presser.</h2>
   <p class="soft center" style="margin-top:14px">Avant chaque espace, une porte. Un instant pour arriver.</p></div>
-  <div class="doors">
+  <div class="dwrap" id="dwrap"><button class="arw dprev" type="button" aria-label="Porte précédente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="arw dnext" type="button" aria-label="Porte suivante"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="doors">
     <figure><button class="door dbtn" type="button" id="door-souffle" data-k="souffle" aria-label="Voir un aperçu : Le Souffle"><img src="app/porte_souffle.jpg" width="532" height="960" loading="lazy" alt="La porte du Souffle : une arche ouverte sur la mer au lever du soleil"></button><figcaption><b>Le Souffle</b></figcaption></figure>
     <figure><button class="door dbtn" type="button" id="door-oxygene" data-k="oxygene" aria-label="Voir un aperçu : Oxygène"><img src="app/porte.jpg" width="665" height="1200" loading="lazy" alt="La porte d'Oxygène : la plume lumineuse dans la nuit"></button><figcaption><b>Oxygène</b></figcaption></figure>
     <figure><button class="door dbtn" type="button" id="door-heritage" data-k="heritage" aria-label="Voir un aperçu : L'Héritage"><img src="app/porte_heritage.jpg" width="532" height="960" loading="lazy" alt="La porte de l'Héritage : la plume et une calligraphie dorées sur un mur de pierre"></button><figcaption><b>L'Héritage</b></figcaption></figure>
     <figure><button class="door dbtn" type="button" id="door-journal" data-k="journal" aria-label="Voir un aperçu : Le Journal"><img src="app/porte_journal.jpg" width="532" height="960" loading="lazy" alt="La porte du Journal : un carnet ancien posé sur le sable"></button><figcaption><b>Le Journal</b></figcaption></figure>
-  </div>
+  </div></div>
   <p class="small center" style="margin-top:34px">Touche une porte pour voir ce qu'il y a derrière.</p>
 </div></section>
 
@@ -167,6 +167,7 @@
 
 <div class="peek" id="peek" hidden><div class="peek-in"><div class="shots" id="shots"></div><p class="pn" id="peekname"></p><p class="soft" id="peektext"></p><button class="quiet" id="peekclose" type="button">Refermer</button></div></div>
 <button type="button" class="upbtn" id="upbtn" aria-label="Revenir en haut de la page" title="Revenir en haut"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14.5l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<label class="hap" aria-hidden="true"><input type="checkbox" switch tabindex="-1"></label>
 <button type="button" class="amb" id="amb" aria-pressed="false" aria-label="Activer l'ambiance sonore du Journal" title="Ambiance sonore"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4.5v10.1a3.4 3.4 0 1 0 2 3.1V8.4h4.2V4.5z" fill="currentColor"/><path class="amb-x" d="M5.5 5.5l13 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
 <audio id="au" preload="none"></audio>
 <script src="site.js" defer></script>

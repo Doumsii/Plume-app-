@@ -100,7 +100,10 @@ const gate=$('gate');const RM=matchMedia('(prefers-reduced-motion:reduce)').matc
 const T=[['Fatima','Asbahtou, invocation du matin','audio/fatima.mp3','app/fatima.jpg','La voix de l\'application',[]],['Oways Ahmad','Radîtu billāhi rabbā','audio/raditu.mp3','app/oways.jpg','Fondateur du label',[['YouTube','https://youtube.com/@plumedo2_records']]],['Ustadh Idriss','Al-Kahf, 9-12','audio/kahf.mp3','app/idriss.jpg','Détenteur d\'une ijaza en Hafs, Instant Coranique',[['YouTube','https://youtube.com/@instantcoranique'],['Instagram','https://www.instagram.com/instant_coranique'],['TikTok','https://www.tiktok.com/@instant_coranique']]],['Ustadh Mounir','Fussilat, versets 27 à 33','audio/mounir.mp3','app/mounir.jpg','Fondateur de Bibliodin, doctorant en théologie islamique',[['Bibliodin','https://bibliodin.com/'],['Instagram','https://www.instagram.com/mounirmonprofdarabe'],['YouTube','https://youtube.com/@mounirmonprofdarabe8460']]],['Ustadh Muhammad','Al-Fatiha','audio/fatiha.mp3','app/muhammad.jpg','Fondateur du centre Muddakir, professeur de Coran et d\'arabe',[['YouTube','https://youtube.com/@muddakkir']]]];
 const PEEK={souffle:[[['app/souffle1_p.jpg','Une citation pour l\'apaisement'],['app/souffle2_p.jpg','Une citation pour la gratitude']],'Le Souffle','Une pensée pour reprendre ton souffle, selon ton émotion du moment.'],oxygene:[[['app/voix_p.jpg','Les récitateurs du label'],['app/medit_p.jpg','Les méditations']],'Oxygène','Le Coran porté par les voix du label, et des méditations.'],heritage:[[['app/mushaf_p.jpg','Une page du Coran'],['app/ayyub_p.jpg','L\'invocation d\'Ayûb']],"L'Héritage",'Le Coran à lire et les invocations des prophètes.'],journal:[[['app/journal_bleu_p.jpg','La page du Journal'],['app/synthese_p.jpg','Le cheminement du mois']],'Le Journal','Tu écris ce que tu vis. Chaque mois, tu vois ton chemin.']};
 const peek=$('peek');let lastDoor=null;
-document.querySelectorAll('.dbtn').forEach(b=>b.onclick=()=>{const d=PEEK[b.dataset.k];const sh=$('shots');sh.textContent='';sh.className='shots n'+d[0].length;d[0].forEach(s=>{const im=document.createElement('img');im.className='screen';im.src=s[0];im.alt=s[1];sh.appendChild(im);});$('peekname').textContent=d[1];$('peektext').textContent=d[2];lastDoor=b;peek.hidden=false;$('peekclose').focus();});
+/* Petit retour haptique : vibration sur Android, interrupteur invisible sur iOS 17.4 et plus ; sinon rien. */
+const tick=(()=>{const lab=document.querySelector('.hap');const RMt=matchMedia('(prefers-reduced-motion:reduce)').matches;
+return()=>{if(RMt)return;try{if(navigator.vibrate){navigator.vibrate(12);return;}}catch(_){}try{if(lab)lab.click();}catch(_){}};})();
+document.querySelectorAll('.dbtn').forEach(b=>b.onclick=()=>{tick();const d=PEEK[b.dataset.k];const sh=$('shots');sh.textContent='';sh.className='shots n'+d[0].length;d[0].forEach(s=>{const im=document.createElement('img');im.className='screen';im.src=s[0];im.alt=s[1];sh.appendChild(im);});$('peekname').textContent=d[1];$('peektext').textContent=d[2];lastDoor=b;peek.hidden=false;$('peekclose').focus();});
 const closePeek=()=>{peek.hidden=true;if(lastDoor)lastDoor.focus();};
 peek.addEventListener('click',e=>{if(e.target===peek||e.target.id==='peekclose')closePeek();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!peek.hidden)closePeek();});
@@ -207,3 +210,12 @@ if(stored()==='on'){const go=e=>{if(e.target.closest&&e.target.closest('#amb'))r
   if(p&&p.then)p.then(ok,()=>{on=false;ui();});else ok();};
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);}
 }catch(err){if(window.console)console.error('ambiance',err);}})();
+
+/* Portes sur téléphone : flèches pour passer de l'une à l'autre (le doigt glisse aussi, nativement). */
+(()=>{const w=document.getElementById('dwrap');if(!w)return;const r=w.querySelector('.doors'),p=w.querySelector('.dprev'),n=w.querySelector('.dnext');if(!r||!p||!n)return;
+const f=()=>r.querySelector('figure');const stepW=()=>{const a=r.querySelectorAll('figure');return a.length>1?a[1].offsetLeft-a[0].offsetLeft:(f()?f().offsetWidth:0);};
+const upd=()=>{const m=r.scrollWidth-r.clientWidth;p.disabled=r.scrollLeft<4;n.disabled=r.scrollLeft>m-4;};
+const RMd=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const go=d=>{tick();r.scrollBy({left:d*stepW(),behavior:RMd?'auto':'smooth'});};
+p.addEventListener('click',()=>go(-1));n.addEventListener('click',()=>go(1));
+r.addEventListener('scroll',()=>requestAnimationFrame(upd),{passive:true});addEventListener('resize',upd);upd();})();

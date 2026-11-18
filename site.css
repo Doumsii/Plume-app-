@@ -386,3 +386,19 @@ body{margin:0}
 .pl a:hover,.pl a:focus-visible{color:var(--cyan);border-color:var(--cyan)}
 @media (min-width:900px){.pr{font-size:15px}.pl{font-size:14.5px}}
 .pr{margin-bottom:12px}
+
+/* ---- retour haptique (iOS : interrupteur invisible, Android : vibration) ---- */
+.hap{position:fixed;left:-60px;top:0;width:44px;height:44px;opacity:0;pointer-events:none;overflow:hidden}
+.hap input{width:44px;height:44px}
+
+/* ---- portes : sur téléphone, une rangée qu'on fait glisser, avec deux flèches ---- */
+.dwrap .dprev,.dwrap .dnext{display:none}
+@media (max-width:760px){
+  .dwrap{position:relative;margin:36px -22px 0}
+  .dwrap .doors{display:flex;gap:16px;margin-top:0;padding:22px calc(50% - min(27vw,115px)) 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+  .dwrap .doors::-webkit-scrollbar{display:none}
+  .dwrap .doors figure{flex:0 0 min(54vw,230px);max-width:none;scroll-snap-align:center;scroll-snap-stop:always}
+  .dwrap .dprev,.dwrap .dnext{display:grid;top:38%;margin-top:0;background:rgba(11,19,38,.55);border-radius:50%;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:opacity .35s}
+  .dwrap .dprev{left:calc(50% - min(27vw,115px) - 22px)}.dwrap .dnext{right:calc(50% - min(27vw,115px) - 22px)}
+  .dwrap .arw[disabled]{opacity:0;pointer-events:none}
+}
