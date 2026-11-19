@@ -218,3 +218,9 @@ const cur=()=>{const mid=r.scrollLeft+r.clientWidth/2;let b=0,bd=1e9;fs.forEach(
 const upd=()=>{const k=cur();bs.forEach((b,i)=>{if(i===k)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});};
 bs.forEach((b,i)=>b.addEventListener('click',()=>{tick();const f=fs[i];r.scrollTo({left:f.offsetLeft+f.offsetWidth/2-r.clientWidth/2,behavior:RMd?'auto':'smooth'});}));
 r.addEventListener('scroll',()=>requestAnimationFrame(upd),{passive:true});addEventListener('resize',upd);upd();})();
+
+/* Apparition douce des sections au défilement (une seule fois ; rien si le navigateur ne sait pas faire). */
+(()=>{if(!('IntersectionObserver' in window))return;
+const els=[...document.querySelectorAll('main section:not(.hero) > .col, main section:not(.hero) > figure, footer.foot > .col')];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{rootMargin:'0px 0px -12% 0px',threshold:0.06});
+els.forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight*0.88)return;el.classList.add('rv');io.observe(el);});})();
